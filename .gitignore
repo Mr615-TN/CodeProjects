@@ -1,0 +1,110 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.coverage
+.pytest_cache/
+.env
+venv/
+env/
+ENV/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+*.egg-info
+*.whl
+build/
+dist/
+MANIFEST.in
+my_package.egg-info/
+sdist
+
+# C/C++
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.la
+*.lo
+*.dSYM/
+*.stackdump
+CMakeFiles/
+CMakeCache.txt
+build/
+
+# Rust
+/target/
+Cargo.lock
+
+# Go
+/bin/
+/pkg/
+go.sum
+go.mod
+
+# Node.js and variants (including npm, yarn, pnpm)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.pnp.js
+.pnp.cjs
+.cache/
+dist/
+build/
+coverage/
+.eslintcache
+.stylelintcache
+.prettiercache
+.turbo/
+
+# Haskell/OCaml
+*.hi
+*.o
+*.obj
+*.dyn_hi
+*.dyn_o
+*.p_hi
+*.p_o
+*.prof
+*.dump-hi
+*.dump-o
+*.tix
+*.output
+*.test
+dist/
+_build/
+.stack-work/
+
+# SQL
+*.sqlite
+*.sqldb
+*.db
+*.mdf
+*.ldf
+
+# General OS and Editor related
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Tool-specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+flycheck_*.elc/
+
+# Logs and temp files
+*.log
+*.out
+tmp/
+temp/
+tmp.*
+*.tmp.*
