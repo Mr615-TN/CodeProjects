@@ -7,7 +7,7 @@ struct Product {
 
 fn main() {
     let mut products: Vec<Product> = Vec::new();
-    let response = reqwest::blocking::get("https://www.newegg.com/");
+    let response = reqwest::blocking::get("https://scrapingcourse.com/ecommerce/");
     
     let html_content = response.unwrap().text().unwrap();
     let document = scraper::Html::parse_document(&html_content);
