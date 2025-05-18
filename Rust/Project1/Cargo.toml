@@ -1,5 +1,5 @@
 [package]
-name = "homeassistant_updater"
+name = "Project1"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,7 +8,7 @@ tokio = { version = "1.0", features = ["full"] }
 reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-future-util = "0.3.28"
+futures-util = "0.3.28"
 tokio-tungstenite = "0.20.1"
 clap = { version = "4.2.7", features = ["derive"] }
 
