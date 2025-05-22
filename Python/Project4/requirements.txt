@@ -1,0 +1,4 @@
+newspaper3k 
+pdfplumber 
+lxml_html_clean 
+requests
