@@ -22,8 +22,8 @@ struct idt_reg {
     uint32_t base;
 } __attribute__((packed));
 
-extern idt_entry idt[256];
-extern idt_reg idt_reg;
+extern struct idt_entry idt[256];
+extern struct idt_reg idt_reg;
 
 
 /* Functions implemented in idt.c */
