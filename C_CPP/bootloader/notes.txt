@@ -1,0 +1,38 @@
+Setting Up the Boot Code:
+
+The [BITS 16] directive indicates that the code is intended for 16-bit mode, which is typical for bootloader code.
+The [ORG 0x7c00] directive tells the assembler that the code will be loaded starting at the memory address 0x7C00, the typical location for bootloaders in x86 architecture.
+Starting the Program:
+
+cli: Clears interrupts.
+mov ax, 0x00 followed by several mov instructions: This sets the data segment (ds), extra segment (es), stack segment (ss), and initializes the stack pointer (sp) to 0x7C00, establishing a safe starting point for stack operations.
+Loading the Message:
+
+mov si, msg: Loads the address of the msg label into the si register. This is where the "Hello World!" message is stored.
+Printing the Message:
+
+The print loop uses lodsb to load a byte from the memory address pointed to by si into the al register.
+cmp al, 0 checks if the end of the string (null-terminator) has been reached.
+If not (je done), it sets up for a BIOS interrupt (int 0x10) to print the character in al using function 0x0E, which outputs a character to the screen.
+End of the Program:
+
+The done label handles cleanup before halting the CPU with hlt.
+
+msg: dw "Hello World!", 0 
+This line attempts to define the string "Hello World!" as a series of words (16 bits) rather than bytes.
+The dw directive reserves space for a word (2 bytes) and tries to store the ASCII values of the characters in "Hello World!". Since each character is a byte, using dw is not appropriate here.
+The string is terminated with a null byte (0) to indicate the end of the string, which is required for the print routine to know when to stop.
+
+times 510 - ($ - $$) dw 0 
+This line is used to fill the remaining space in the 512-byte boot sector with zeroes.
+Explanation of Components:
+($ - $$): This expression calculates the number of bytes used so far. $ represents the current location counter (the next address to write to), and $$ represents the start address of the current section (the start of the code). Therefore, ($ - $$) gives the total number of bytes used.
+510 - ($ - $$): This subtracts the number of bytes used from 510 to determine how many more bytes need to be filled to reach 510 bytes.
+dw 0: Each zero is defined as a word (2 bytes). However, since im filling space until 510 bytes, it should ideally be db 0 instead of dw 0.
+
+dw 0xAA55  
+This line defines the boot signature 0xAA55, which must be present at the end of the boot sector (the last two bytes).
+The boot signature indicates to the BIOS that the bootloader is valid and can be executed.
+Summary of Corrections
+msg Definition: Change msg: dw "Hello World!", 0 to msg: db "Hello World!", 0 to define the string correctly as bytes.
+Padding Line: Change the padding line from times 510 - ($ - $$) dw 0 to times 510 - ($ - $$) db 0 to correctly fill the remaining space with
