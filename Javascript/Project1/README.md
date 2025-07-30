@@ -1,2 +1,2 @@
-# CodeProjects
-This folder is mainly for JavaScript Projects
+# JavaScript Project 1 
+This is just a simple todo list 
