@@ -1,28 +1,20 @@
-import BaseHTTPServer
+import socket
+HOST, PORT = '', 8888
 
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
-    '''Handle HTTP requests by returning a fixed 'page'.'''
+listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+listen_socket = setsockop(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+listen_socket.bind((HOST, PORT))
+listen_socket.listen(1)
+print('Serving HTTP on port %s ...' % PORT)
+while True:
+    client_connection, client_address = listen_socket.accept()
+    request = client_connection.recv(1024)
+    print(request)
 
-    # Page to send back.
-    Page = '''\
-<html>
-<body>
-<p>Hello, web!</p>
-</body>
-</html>
-'''
+    http_response = """\
+HTTP/1.1 200 OK
 
-    # Handle a GET request.
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html")
-        self.send_header("Content-Length", str(len(self.Page)))
-        self.end_headers()
-        self.wfile.write(self.Page)
-
-#----------------------------------------------------------------------
-
-if __name__ == '__main__':
-    serverAddress = ('', 8080)
-    server = BaseHTTPServer.HTTPServer(serverAddress, RequestHandler)
-    server.serve_forever()
+Hello, World!
+"""
+    client_connection.sendall(http_response)
+    client_connection.close()
