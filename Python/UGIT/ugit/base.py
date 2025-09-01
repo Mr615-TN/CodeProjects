@@ -66,7 +66,10 @@ def commit(message):
     commit += '\n'
     commit += f'{message}\n'
 
-    return data.hash_object(commit.encode(), 'commit')
+    oid = data.hash_object(commit.encode(), 'commit')
+    data.set_HEAD(oid)
+
+    return oid
 
 def is_ignored(path):
     return '.ugit' in path.split('/')
