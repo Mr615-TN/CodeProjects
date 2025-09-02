@@ -84,6 +84,9 @@ def commit(message):
         read_tree(commit.tree)
         data.set_HEAD(oid)
 
+def create_tag(name, oid):
+    pass
+
 Commit = namedtuple('Commit', ['tree', 'parent', 'message'])
 
 
