@@ -14,6 +14,8 @@ def parse_args():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command')
     subparsers.required = True
+    
+    oid = base.get_oid
 
     init_parser = subparsers.add_parser('init')
     init_parser.set_defaults(func=init)
@@ -24,14 +26,14 @@ def parse_args():
 
     cat_file_parser = subparsers.add_parser('cat-file')
     cat_file_parser.set_defaults(func=cat_file)
-    cat_file_parser.add_argument('object')
+    cat_file_parser.add_argument('object', type=oid)
 
     write_tree_parser = subparsers.add_parser('write-tree')
     write_tree_parser.set_defaults(func=write_tree)
 
     read_tree_parser = subparsers.add_parser('read-tree')
     read_tree_parser.set_defaults(func=read_tree)
-    read_tree_parser.add_argument('tree')
+    read_tree_parser.add_argument('tree', type=oid)
 
     commit_parser = commands.add_parser ('commit')
     commit_parser.set_defaults (func=commit)
