@@ -1,6 +1,7 @@
 import itertools
 import operator
 import os
+import string
 
 from collections import namedtuple
 from . import data
@@ -85,7 +86,7 @@ def commit(message):
         data.update_ref('HEAD', oid)
 
 def create_tag(name, oid):
-    pass
+    data.update_ref(f'refs/tags/{name}'.oid)
 
 Commit = namedtuple('Commit', ['tree', 'parent', 'message'])
 
@@ -107,6 +108,24 @@ def get_commit(oid):
     message = '\n'.join(lines)
     return Commit(tree=tree, parent=parent, message=message)
 
+def get_oid(name):
+    if name == '@' : name = 'HEAD'
+    refs_to_try = [
+        f'{name}',
+        f'refs/{name}',
+        f'refs/heads/{name}',
+        f'refs/tags/{name}'
+    ]
+
+    for ref in refs_to_try:
+        if data.get_ref(ref):
+            return data.get_ref(ref)
+
+    is_hex = all(c in string.hexdigits for c in name)
+    if len(name) == 40 and is_hex:
+        return name
+
+    assert False, f'Unkown name {name}'
 
 def is_ignored(path):
     return '.ugit' in path.split('/')
