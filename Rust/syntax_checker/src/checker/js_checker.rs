@@ -1,11 +1,10 @@
 use std::path::Path;
 use std::process::Command;
 
-pub fn check_rust_file(path: &Path) {
-    println!("🦀 Checking Rust syntax: {}", path.display());
-    let output = Command::new("rustc")
-        .arg("--emit")
-        .arg("metadata")
+pub fn check_js_file(path: &Path) {
+    println!("🟨 Checking JavaScript syntax: {}", path.display());
+    let output = Command::new("node")
+        .arg("--check")
         .arg(path)
         .output();
 

@@ -1,11 +1,10 @@
 use std::path::Path;
 use std::process::Command;
 
-pub fn check_rust_file(path: &Path) {
-    println!("🦀 Checking Rust syntax: {}", path.display());
-    let output = Command::new("rustc")
-        .arg("--emit")
-        .arg("metadata")
+pub fn check_ts_file(path: &Path) {
+    println!("🟦 Checking TypeScript syntax: {}", path.display());
+    let output = Command::new("tsc")
+        .arg("--noEmit")
         .arg(path)
         .output();
 
