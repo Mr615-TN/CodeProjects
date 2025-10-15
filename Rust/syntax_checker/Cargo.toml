@@ -6,4 +6,4 @@ edition = "2024"
 [dependencies]
 walkdir = "2.5"
 regex = "1.10"
-
+rayon = "1.10"

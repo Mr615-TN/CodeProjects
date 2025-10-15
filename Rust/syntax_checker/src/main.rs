@@ -2,6 +2,7 @@ mod checker;
 mod utils;
 
 use checker::*;
+use rayon::prelude::*;
 use std::env;
 use std::path::Path;
 
@@ -18,9 +19,13 @@ fn main() {
     if path.is_file() {
         run_checker(path);
     } else if path.is_dir() {
-        for entry in utils::list_files_recursively(path) {
-            run_checker(&entry);
-        }
+        let files = utils::list_files_recursively(path);
+
+        println!("🔍 Found {} files. Checking in parallel...\n", files.len());
+
+        files.par_iter().for_each(|entry| {
+            run_checker(entry);
+        });
     } else {
         eprintln!("Invalid path: {}", path.display());
     }
@@ -37,7 +42,7 @@ fn run_checker(path: &Path) {
         "js" => js_checker::check_js_file(path),
         "ts" => ts_checker::check_ts_file(path),
         "go" => go_checker::check_go_file(path),
-        _ => println!("Skipping {} (unsupported file type)", path.display()),
+        _ => (), // silently skip unsupported files
     }
 }
 
