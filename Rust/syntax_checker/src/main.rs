@@ -1,7 +1,7 @@
 mod checker;
 mod utils;
 
-use checker::(c_checker, python_checker, rust_checker);
+use checker::*;
 use std::env;
 use std::path::Path;
 
@@ -9,7 +9,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 2 {
-        eprintln!("Usage: {} <path>", args[0]);
+        eprintln!("Usage: {} <file_or_directory>", args[0]);
         std::process::exit(1);
     }
 
@@ -27,11 +27,17 @@ fn main() {
 }
 
 fn run_checker(path: &Path) {
-    let ext = path.extension().unwrap().to_str().unwrap();
+    let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
     match ext {
-        "c" | "h" => c_checker::check(path),
-        "py" => python_checker::check(path),
-        "rs" => rust_checker::check(path),
-        _ => println!("Skipping {} (unsupported extension)", path.display()),
-    };
+        "rs" => rust_checker::check_rust_file(path),
+        "py" => python_checker::check_python_file(path),
+        "c" | "h" => c_checker::check_c_file(path),
+        "cpp" | "cc" | "cxx" | "hpp" => cpp_checker::check_cpp_file(path),
+        "java" => java_checker::check_java_file(path),
+        "js" => js_checker::check_js_file(path),
+        "ts" => ts_checker::check_ts_file(path),
+        "go" => go_checker::check_go_file(path),
+        _ => println!("Skipping {} (unsupported file type)", path.display()),
+    }
 }
+
