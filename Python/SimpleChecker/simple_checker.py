@@ -47,12 +47,16 @@ def run_smart(cmd, timeout=None):
     start = time.time()
     proc = psutil.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    # Wait briefly to detect short-running programs
     try:
         stdout, stderr = proc.communicate(timeout=1)
-        # If we reach here, the program finished quickly — use light mode.
         end = time.time()
-        mem_info = proc.memory_info().rss / (1024 * 1024)
+
+        # 🩹 FIX: Safely get memory info if process still exists
+        try:
+            mem_info = proc.memory_info().rss / (1024 * 1024)
+        except psutil.NoSuchProcess:
+            mem_info = 0.0  # process ended too quickly to sample
+
         return {
             "exit_code": proc.returncode,
             "duration": end - start,
@@ -62,10 +66,12 @@ def run_smart(cmd, timeout=None):
             "stderr": stderr.decode(errors="ignore"),
             "mode": "light",
         }
+
     except subprocess.TimeoutExpired:
         # Still running — switch to monitoring mode
         print("ℹ️ Detected long-running program — switching to monitor mode.")
         return {**monitor_process(proc, timeout=timeout), "mode": "monitor"}
+
 
 
 def analyze_results(results):
