@@ -1,54 +1,55 @@
 import argparse
 import subprocess
-import sys
-import os
-import time
 import psutil
-
+import time
+import os
+import sys
 from statistics import mean
 
-def monitor_proc(cmd, sample_interval=0.1, timeout=None):
-    """Run a command and monitor the process."""
+def monitor_process(cmd, sample_interval=0.2, timeout=None):
+    """Run a command and monitor its resource usage."""
     print(f"Running: {' '.join(cmd)}")
 
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = psutil.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     start_time = time.time()
     cpu_samples = []
     mem_samples = []
-    peak_mem = 0
+    peak_memory = 0
 
     try:
-        while proc.is_running():
+        while process.is_running():
             try:
-                with proc.oneshot():
-                    cpu = proc.cpu_percent()
-                    mem = proc.memory_info().rss / (1024 * 1024)
+                with process.oneshot():
+                    cpu = process.cpu_percent()
+                    mem = process.memory_info().rss / (1024 * 1024)  # MB
                     cpu_samples.append(cpu)
                     mem_samples.append(mem)
-                    peak_mem = max(peak_mem, mem)
+                    peak_memory = max(peak_memory, mem)
                 if timeout and (time.time() - start_time > timeout):
-                    proc.kill()
+                    process.kill()
+                    print(f"⛔ Timeout reached ({timeout}s). Process killed.")
                     break
+                time.sleep(sample_interval)
             except psutil.NoSuchProcess:
                 break
 
-        stdout, stderr = proc.communicate()
+        stdout, stderr = process.communicate()
         end_time = time.time()
         duration = end_time - start_time
-        exit_code = proc.returncode
+        exit_code = process.returncode
 
         return {
-            "peak_mem": peak_mem,
-            "duration": duration,
             "exit_code": exit_code,
+            "duration": duration,
             "avg_cpu": mean(cpu_samples) if cpu_samples else 0,
-            "stdout": stdout.decode("utf-8"),
-            "stderr": stderr.decode("utf-8"),
+            "peak_memory": peak_memory,
+            "stdout": stdout.decode(errors="ignore"),
+            "stderr": stderr.decode(errors="ignore"),
         }
 
     except KeyboardInterrupt:
-        proc.kill()
-        print("Process killed by user.")
+        process.kill()
+        print("⛔ Process interrupted by user.")
         sys.exit(1)
 
 
@@ -56,18 +57,18 @@ def analyze_results(results):
     """Basic heuristics for inefficiencies and leaks."""
     issues = []
     if results["exit_code"] != 0:
-        issues.append("! Non zero exit code: program crashed or returned an error.")
-    if results["peak_mem"] > 500:
-        issues.append("! High memory usage: program may be leaking memory.")
+        issues.append("❗ Non-zero exit code: program crashed or returned error.")
+    if results["peak_memory"] > 500:
+        issues.append("⚠️ High memory usage (>500 MB). Possible leak or inefficiency.")
     if results["duration"] > 10:
-        issues.append("! High runtime: program may be inefficient. Check for inefficient loops.")
+        issues.append("⚠️ Long runtime (>10s). Check for inefficient loops or I/O.")
     if results["avg_cpu"] < 5 and results["duration"] > 5:
-        issues.append("! Low CPU usage with long runtime - possible blocking io or deadlock")
+        issues.append("⚠️ Low CPU usage with long runtime — possible blocking I/O or deadlock.")
 
     if not issues:
-        issues.append("Good job! Your program is efficient and non-leaking.")
-
+        issues.append("✅ No obvious issues detected.")
     return issues
+
 
 def main():
     parser = argparse.ArgumentParser(description="Lightweight Valgrind-like runtime analyzer.")
@@ -78,7 +79,7 @@ def main():
     results = monitor_process(args.command, timeout=args.timeout)
     print("\n--- Resource Summary ---")
     print(f"Duration: {results['duration']:.2f}s")
-    print(f"Peak Memory: {results['peak_mem']:.2f} MB")
+    print(f"Peak Memory: {results['peak_memory']:.2f} MB")
     print(f"Average CPU: {results['avg_cpu']:.2f}%")
     print(f"Exit Code: {results['exit_code']}\n")
 
@@ -92,5 +93,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
