@@ -1,0 +1,9 @@
+[package]
+name = "syntax_checker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+walkdir = "2.5"
+regex = "1.10"
+rayon = "1.10"
